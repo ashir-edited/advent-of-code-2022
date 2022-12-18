@@ -1,23 +1,40 @@
+def simulate_cycle(cycle, x, amount=0, cycle_twice=False):
+    checks = [20, 60, 100, 140, 180, 220]
+    check = None
+
+    if cycle in checks:
+        check = x * cycle
+
+    cycle += 1
+
+    if not cycle_twice:
+        return cycle, x, check
+
+    if cycle in checks:
+        check = x * cycle
+
+    cycle += 1
+    x += amount
+
+    return cycle, x, check
+
+
 with open("input.txt") as f:
     x = 1
     cycle = 1
     total = []
-    checks = [20, 60, 100, 140, 180, 220]
+
     for line in f:
         line = line.rstrip()
         instruction = line.split()
         command = instruction[0]
 
-        if cycle in checks:
-            total.append(x * cycle)
-
         if command == "noop":
-            cycle += 1
+            cycle, x, check = simulate_cycle(cycle, x)
         elif command == "addx":
-            cycle += 2
-            if cycle - 1 in checks:
-                total.append(x * (cycle - 1))
-            amount = int(instruction[1])
-            x += amount
+            cycle, x, check = simulate_cycle(cycle, x, int(instruction[1]), cycle_twice=True)
+
+        if check:
+            total.append(check)
 
 print(sum(total))
