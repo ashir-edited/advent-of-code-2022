@@ -1,8 +1,37 @@
+def simulate_cycle(cycle, x, rows, amount=0, cycle_twice=False):
+    row = (cycle - 1) // 40
+    index = (cycle - 1) % 40
+
+    if index in range(x - 1, x + 2):
+        rows[row].append("#")
+    else:
+        rows[row].append(".")
+
+    cycle += 1
+
+    if not cycle_twice:
+        return cycle, x, rows
+
+    row = (cycle - 1) // 40
+    index = (cycle - 1) % 40
+
+    if index in range(x - 1, x + 2):
+        rows[row].append("#")
+    else:
+        rows[row].append(".")
+
+    cycle += 1
+    x += amount
+
+    return cycle, x, rows
+
+
 with open("input.txt") as f:
     x = 1
     cycle = 1
-    total = []
-    checks = [20, 60, 100, 140, 180, 220]
+    rows = []
+    for i in range(6):
+        rows.append([])
 
     for line in f:
         line = line.rstrip()
@@ -10,13 +39,9 @@ with open("input.txt") as f:
         command = instruction[0]
 
         if command == "noop":
-            cycle += 1
+            cycle, x, row = simulate_cycle(cycle, x, rows)
         elif command == "addx":
-            for i in range(2):
+            cycle, x, rows = simulate_cycle(cycle, x, rows, int(instruction[1]), cycle_twice=True)
 
-                cycle += 1
-            cycle += 2
-            if cycle - 1 in checks:
-                total.append(x * (cycle - 1))
-            amount = int(instruction[1])
-            x += amount
+for row in rows:
+    print("".join(row))
